@@ -1,0 +1,65 @@
+<!--
+    frontend/partials/sidebar.html
+
+    ============================================================
+    ARCHIVO TEMPORAL — SOLO PARA DESARROLLO FRONTEND STANDALONE
+    ============================================================
+    Copia ESTÁTICA del fragmento equivalente en:
+        src/main/resources/templates/fragments/sidebar.html
+
+    Diferencias respecto a la versión Thymeleaf (y por qué):
+      - Los enlaces apuntan a "busquedas.html" / "transformacion-claves.html"
+        (con extensión .html), porque aquí no existe un BusquedaController
+        que resuelva "/busquedas" sin extensión. En la versión Thymeleaf
+        los enlaces usan th:href="@{/busquedas}".
+      - No existe th:classappend para resaltar el enlace activo. En su
+        lugar, cada <a> tiene un atributo data-pagina, y
+        js/incluir-partials.js le agrega la clase "activo" comparando
+        ese valor contra la página actual (detectada por location.pathname).
+
+    SINCRONIZACIÓN: cualquier cambio de estructura/textos del menú debe
+    replicarse manualmente en fragments/sidebar.html (y viceversa).
+    ============================================================
+-->
+<aside id="sidebar" class="sidebar">
+    <nav class="sidebar__nav" aria-label="Navegación principal">
+
+        <!-- ===================== Categoría: Algoritmos de búsqueda ===================== -->
+        <div class="sidebar__categoria">
+            <button type="button" class="sidebar__categoria-toggle" data-target="grupoBusquedas">
+                <span>Algoritmos de búsqueda</span>
+                <span class="sidebar__caret">▾</span>
+            </button>
+
+            <ul id="grupoBusquedas" class="sidebar__submenu">
+                <li>
+                    <a href="busquedas.html" data-pagina="busquedas">
+                        Búsquedas internas y externas
+                    </a>
+                </li>
+                <li>
+                    <a href="transformacion-claves.html" data-pagina="transformacion-claves">
+                        Transformación de claves
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ===================== Categoría: Grafos (próximamente) ===================== -->
+        <div class="sidebar__categoria">
+            <button type="button" class="sidebar__categoria-toggle" data-target="grupoGrafos">
+                <span>Grafos</span>
+                <span class="sidebar__caret">▾</span>
+            </button>
+
+            <ul id="grupoGrafos" class="sidebar__submenu">
+                <li>
+                    <!-- BACKEND/FRONTEND TODO: cuando exista el módulo de grafos,
+                         agregar aquí grafos.html (o la ruta que corresponda). -->
+                    <span class="sidebar__proximamente">Próximamente</span>
+                </li>
+            </ul>
+        </div>
+
+    </nav>
+</aside>

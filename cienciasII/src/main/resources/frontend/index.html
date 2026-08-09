@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+    frontend/index.html
+
+    ============================================================
+    ARCHIVO TEMPORAL — SOLO PARA DESARROLLO FRONTEND STANDALONE
+    ============================================================
+    Equivalente estático de:
+        src/main/resources/templates/index.html
+
+    Diferencias respecto a la versión Thymeleaf:
+      - th:href="@{/css/styles.css}"   ->  href="css/styles.css" (ruta relativa real)
+      - th:src="@{/js/main.js}"        ->  src="js/main.js"
+      - th:replace de header/sidebar   ->  <div id="contenedorHeader">/<div id="contenedorSidebar">
+                                            vacíos, rellenados por js/incluir-partials.js
+      - th:href="@{/busquedas}"        ->  href="busquedas.html" (con extensión, sin controlador)
+
+    Ejecutar con:
+        cd frontend
+        python -m http.server 5500
+    y abrir http://localhost:5500/
+
+    Cuando el frontend se dé por terminado, esta página se descarta y
+    el contenido/estructura se traslada a index.html en templates/
+    (que ya existe y sigue funcionando sin cambios).
+    ============================================================
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio · Plataforma Educativa de Estructuras de Datos</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Contenedor vacío: incluir-partials.js inyecta aquí partials/header.html -->
+    <div id="contenedorHeader"></div>
+
+    <div class="app-layout">
+
+        <!-- Contenedor vacío: incluir-partials.js inyecta aquí partials/sidebar.html -->
+        <div id="contenedorSidebar"></div>
+
+        <main class="contenido">
+
+            <section class="bienvenida">
+                <h1>Plataforma Educativa de Estructuras y Organización de Datos</h1>
+                <p>
+                    Un espacio interactivo para estudiar, experimentar y visualizar paso a paso
+                    algoritmos de búsqueda, funciones de transformación de claves (hashing) y,
+                    próximamente, algoritmos sobre grafos.
+                </p>
+            </section>
+
+            <section class="panel">
+                <h2 class="panel__titulo">Objetivo educativo</h2>
+                <p>
+                    Esta plataforma no se limita a ejecutar algoritmos: busca que el estudiante
+                    entienda <strong>qué datos existen</strong>, <strong>qué algoritmo se está
+                    ejecutando</strong>, <strong>qué paso se realiza en cada momento</strong>,
+                    <strong>qué comparación se hace</strong>, <strong>qué resultado se obtiene</strong>
+                    y <strong>cuál es la complejidad temporal</strong> asociada a cada técnica.
+                </p>
+            </section>
+
+            <h2>Temas disponibles</h2>
+            <div class="tarjetas-grid">
+
+                <a href="busquedas.html" class="tarjeta-acceso">
+                    <span class="tarjeta-acceso__titulo">Búsquedas internas y externas</span>
+                    <span class="tarjeta-acceso__descripcion">
+                        Genera bloques de claves, ordénalos y compara la búsqueda secuencial
+                        contra la búsqueda binaria, paso a paso.
+                    </span>
+                </a>
+
+                <a href="transformacion-claves.html" class="tarjeta-acceso">
+                    <span class="tarjeta-acceso__titulo">Transformación de claves</span>
+                    <span class="tarjeta-acceso__descripcion">
+                        Calcula funciones hash (módulo, cuadrado, truncamiento, plegamiento) y
+                        observa cómo se resuelven las colisiones.
+                    </span>
+                </a>
+
+                <div class="tarjeta-acceso tarjeta-acceso--proximamente">
+                    <span class="tarjeta-acceso__titulo">Grafos</span>
+                    <span class="tarjeta-acceso__descripcion">
+                        Próximamente: representación, recorridos (BFS/DFS) y algoritmos
+                        de árboles de expansión mínima (Prim, Kruskal).
+                    </span>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- incluir-partials.js debe cargarse ANTES que main.js, ya que main.js
+         espera el evento "partials:listas" que dispara incluir-partials.js -->
+    <script src="js/incluir-partials.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

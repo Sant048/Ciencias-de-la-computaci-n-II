@@ -1,0 +1,34 @@
+<!--
+    frontend/partials/header.html
+
+    ============================================================
+    ARCHIVO TEMPORAL — SOLO PARA DESARROLLO FRONTEND STANDALONE
+    ============================================================
+    Esta es una copia ESTÁTICA (HTML plano, sin th:fragment) del
+    fragmento equivalente en:
+        src/main/resources/templates/fragments/header.html
+
+    Se inyecta en cada página mediante js/incluir-partials.js usando
+    fetch() + innerHTML, imitando en el cliente lo que Thymeleaf hace
+    en el servidor con th:replace="~{fragments/header :: header}".
+
+    SINCRONIZACIÓN: si se modifica el diseño del encabezado aquí,
+    replicar el cambio manualmente en
+    src/main/resources/templates/fragments/header.html (y viceversa),
+    hasta que este directorio frontend/ se descarte y la aplicación
+    final se sirva siempre desde Spring Boot + Thymeleaf.
+    ============================================================
+-->
+<header class="app-header">
+    <div class="app-header__brand">
+        <span class="app-header__icon">◆</span>
+        <div class="app-header__titles">
+            <span class="app-header__title">Plataforma Educativa</span>
+            <span class="app-header__subtitle">Estructuras y Organización de Datos</span>
+        </div>
+    </div>
+
+    <button id="btnMenuMovil" class="app-header__menu-toggle" type="button" aria-label="Abrir menú">
+        ☰
+    </button>
+</header>

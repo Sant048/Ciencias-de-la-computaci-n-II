@@ -1,0 +1,190 @@
+<!--
+    frontend/transformacion-claves.html
+
+    ARCHIVO TEMPORAL — SOLO PARA DESARROLLO FRONTEND STANDALONE.
+    Equivalente estático de
+    src/main/resources/templates/transformacion-claves.html
+    (mismo contenido; solo cambian rutas de assets y la carga de
+    header/sidebar, ver comentarios inline). Ejecutar con:
+        cd frontend && python -m http.server 5500
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformación de claves · Plataforma Educativa</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<!-- TEMPORAL: data-pagina-actual reemplaza a th:with="paginaActiva='transformacion-claves'" -->
+<body data-pagina-actual="transformacion-claves">
+
+    <!-- TEMPORAL: contenedor vacío, incluir-partials.js inyecta aquí partials/header.html -->
+    <div id="contenedorHeader"></div>
+
+    <div class="app-layout">
+        <!-- TEMPORAL: contenedor vacío, incluir-partials.js inyecta aquí partials/sidebar.html -->
+        <div id="contenedorSidebar"></div>
+
+        <main class="contenido">
+            <h1>Transformación de claves</h1>
+
+            <!-- ============================= SECCIÓN TEÓRICA ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">Conceptos básicos</h2>
+                <p>
+                    Una <strong>tabla hash</strong> es una estructura de datos que permite acceder a
+                    un valor casi directamente a partir de su clave, utilizando una
+                    <strong>función de transformación de claves (función hash)</strong> que
+                    convierte la clave en un índice dentro de la tabla.
+                </p>
+                <p>
+                    Una <strong>colisión</strong> ocurre cuando dos claves distintas producen el
+                    mismo índice al aplicar la función hash. Las colisiones son inevitables
+                    cuando el número de claves posibles supera el tamaño de la tabla, y por eso
+                    existen <strong>métodos de resolución de colisiones</strong>, que definen dónde
+                    ubicar la clave cuando la posición calculada ya está ocupada.
+                </p>
+            </section>
+
+            <!-- ============================= FUNCIONES HASH ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">1. Calcular función hash</h2>
+
+                <div class="form-fila">
+                    <div class="form-grupo">
+                        <label for="selectFuncionHash">Función de transformación</label>
+                        <select id="selectFuncionHash">
+                            <option value="mod">Hash Mod</option>
+                            <option value="cuadrado">Cuadrado (mid-square)</option>
+                            <option value="truncamiento">Truncamiento</option>
+                            <option value="plegamiento">Plegamiento</option>
+                        </select>
+                    </div>
+                    <div class="form-grupo">
+                        <label for="inputClaveHash">Clave (numérica)</label>
+                        <input type="text" id="inputClaveHash" placeholder="Ej: 12345">
+                    </div>
+                    <div class="form-grupo">
+                        <label for="inputTamanoTabla">Tamaño de la tabla (m)</label>
+                        <input type="number" id="inputTamanoTabla" min="2" max="100" value="10">
+                    </div>
+                </div>
+
+                <!-- Parámetro adicional para Truncamiento: posiciones a extraer -->
+                <div class="form-grupo" id="grupoPosicionesTruncamiento" style="display:none;">
+                    <label for="inputPosiciones">Posiciones a extraer (0-indexadas, separadas por coma)</label>
+                    <input type="text" id="inputPosiciones" placeholder="Ej: 0,2,4">
+                </div>
+
+                <!-- Parámetro adicional para Plegamiento: tamaño de grupo -->
+                <div class="form-grupo" id="grupoTamanoGrupo" style="display:none;">
+                    <label for="inputTamanoGrupo">Tamaño de cada grupo (dígitos)</label>
+                    <input type="number" id="inputTamanoGrupo" min="1" max="10" value="2">
+                </div>
+
+                <div class="botonera">
+                    <button type="button" id="btnCalcularHash" class="btn">Calcular</button>
+                </div>
+
+                <div id="mensajeHash"></div>
+                <div id="resultadoHash" class="log-pasos" style="display:none;"></div>
+            </section>
+
+            <!-- ============================= TABLA HASH INTERACTIVA ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">2. Tabla hash interactiva</h2>
+                <p>Inserta claves en una tabla hash y observa cómo se resuelven las colisiones.</p>
+
+                <div class="form-fila">
+                    <div class="form-grupo">
+                        <label for="inputTamanoTablaInteractiva">Tamaño de la tabla</label>
+                        <input type="number" id="inputTamanoTablaInteractiva" min="2" max="30" value="10">
+                    </div>
+                    <div class="form-grupo">
+                        <label for="selectMetodoColision">Método de resolución de colisiones</label>
+                        <select id="selectMetodoColision">
+                            <option value="lineal">Lineal</option>
+                            <option value="cuadratica">Cuadrática</option>
+                            <option value="dobleHash">Doble Hash</option>
+                            <option value="anidados">Anidados</option>
+                            <option value="encadenamiento">Encadenamiento</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="botonera">
+                    <button type="button" id="btnCrearTabla" class="btn btn--secundario">Crear / reiniciar tabla</button>
+                </div>
+
+                <div class="form-grupo" style="margin-top:16px;">
+                    <label for="inputClaveInsertar">Clave a insertar (numérica)</label>
+                    <input type="text" id="inputClaveInsertar" placeholder="Ej: 12345">
+                </div>
+                <div class="botonera">
+                    <button type="button" id="btnInsertarClave" class="btn">Insertar clave</button>
+                </div>
+
+                <div id="mensajeTabla"></div>
+                <div id="colisionDetectada" class="mensaje mensaje--advertencia" style="display:none;"></div>
+
+                <table class="tabla-datos" style="margin-top:16px;">
+                    <thead>
+                        <tr>
+                            <th>Índice</th>
+                            <th>Valor(es)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaHash"></tbody>
+                </table>
+            </section>
+
+            <!-- ============================= MÉTODOS DE COLISIÓN (explicación) ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">3. Métodos de resolución de colisiones</h2>
+                <p><strong>Lineal:</strong> h(k, i) = (h(k) + i) mod m. Se prueba la siguiente posición, una a una.</p>
+                <p><strong>Cuadrática:</strong> h(k, i) = (h(k) + c1·i + c2·i²) mod m. Los saltos crecen cuadráticamente (c1 = c2 = 1 en esta implementación).</p>
+                <p><strong>Doble Hash:</strong> h(k, i) = (h1(k) + i·h2(k)) mod m, usando una segunda función hash para calcular el salto.</p>
+                <p><strong>Anidados:</strong> cada posición admite un pequeño arreglo de hasta 2 claves antes de recurrir a sondeo lineal como desbordamiento.</p>
+                <p><strong>Encadenamiento:</strong> cada posición contiene una lista sin límite de tamaño; nunca se considera "tabla llena".</p>
+            </section>
+
+            <!-- ============================= COMPLEJIDAD ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">4. Complejidad del hashing</h2>
+                <table class="tabla-datos">
+                    <thead>
+                        <tr><th>Caso</th><th>Complejidad</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Promedio</td><td>O(1)</td></tr>
+                        <tr><td>Peor caso</td><td>O(n)</td></tr>
+                    </tbody>
+                </table>
+                <p>
+                    El rendimiento real del hashing depende de la calidad de la función hash,
+                    la distribución de las claves, el factor de carga de la tabla (n / m) y el
+                    método utilizado para resolver colisiones.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+    <!--
+        BACKEND TODO:
+        El cálculo de funciones hash y la inserción en la tabla actualmente
+        se ejecutan en JavaScript (ver transformacion-claves.js), replicando
+        la lógica ya implementada y probada en HashService / CollisionService
+        (Java). Los futuros endpoints serían:
+            POST /api/hash/calcular
+            POST /api/hash/insertar
+    -->
+
+    <!-- TEMPORAL: incluir-partials.js no existe en la versión Spring; inyecta
+         header/sidebar por fetch. Debe cargarse antes que main.js. -->
+    <script src="js/incluir-partials.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/transformacion-claves.js"></script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--
+    frontend/busquedas.html
+
+    ARCHIVO TEMPORAL — SOLO PARA DESARROLLO FRONTEND STANDALONE.
+    Equivalente estático de src/main/resources/templates/busquedas.html
+    (mismo contenido; solo cambian rutas de assets y la carga de
+    header/sidebar, ver comentarios inline). Ejecutar con:
+        cd frontend && python -m http.server 5500
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsquedas internas y externas · Plataforma Educativa</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<!--
+    TEMPORAL: data-pagina-actual reemplaza a th:with="paginaActiva='busquedas'".
+    Lo lee incluir-partials.js para resaltar el enlace activo del sidebar.
+-->
+<body data-pagina-actual="busquedas">
+
+    <!-- TEMPORAL: contenedor vacío, incluir-partials.js inyecta aquí partials/header.html
+         (equivalente estático de th:replace="~{fragments/header :: header}") -->
+    <div id="contenedorHeader"></div>
+
+    <div class="app-layout">
+        <!-- TEMPORAL: contenedor vacío, incluir-partials.js inyecta aquí partials/sidebar.html
+             (equivalente estático de th:replace="~{fragments/sidebar :: sidebar}") -->
+        <div id="contenedorSidebar"></div>
+
+        <main class="contenido">
+            <h1>Búsquedas internas y externas</h1>
+
+            <!-- ============================= SECCIÓN TEÓRICA ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">Conceptos básicos</h2>
+                <p>
+                    Una <strong>búsqueda de información</strong> consiste en localizar un dato
+                    (clave) dentro de un conjunto de datos. Según dónde estén almacenados esos
+                    datos, la búsqueda se clasifica en:
+                </p>
+                <p>
+                    <strong>Búsqueda interna:</strong> los datos residen en memoria principal (RAM),
+                    por lo que el acceso a cada elemento es prácticamente inmediato.
+                </p>
+                <p>
+                    <strong>Búsqueda externa:</strong> los datos residen en memoria secundaria
+                    (disco), por lo que cada acceso a un elemento implica una operación de
+                    entrada/salida, mucho más costosa que un acceso en memoria interna.
+                </p>
+                <p>
+                    Esta herramienta trabaja con <strong>búsqueda interna</strong> (los bloques de
+                    claves se mantienen en memoria del navegador), pero los conceptos de
+                    comparación y complejidad son igualmente aplicables a la búsqueda externa.
+                </p>
+            </section>
+
+            <!-- ============================= GENERADOR DE BLOQUES ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">1. Crear un bloque de datos</h2>
+                <p>Define cuántas claves tendrá el bloque (n) y cuántos caracteres tendrá cada clave (m).</p>
+
+                <form id="formBloque">
+                    <div class="form-fila">
+                        <div class="form-grupo">
+                            <label for="inputN">Número de claves (n)</label>
+                            <input type="number" id="inputN" min="1" max="200" value="10" required>
+                        </div>
+                        <div class="form-grupo">
+                            <label for="inputM">Tamaño de cada clave (m)</label>
+                            <input type="number" id="inputM" min="1" max="20" value="5" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label>Tipo de generación</label>
+                        <div class="form-radio-grupo">
+                            <label><input type="radio" name="tipoGeneracion" value="aleatoria" checked> Aleatoria</label>
+                            <label><input type="radio" name="tipoGeneracion" value="manual"> Manual</label>
+                        </div>
+                    </div>
+
+                    <!-- Contenedor donde se insertan dinámicamente los campos de entrada manual -->
+                    <div id="contenedorManual"></div>
+
+                    <div id="mensajeBloque"></div>
+
+                    <div class="botonera">
+                        <button type="submit" class="btn">Crear bloque</button>
+                        <button type="button" id="btnGuardarBloque" class="btn btn--secundario">Guardar bloque</button>
+                        <button type="button" id="btnCargarBloque" class="btn btn--secundario">Cargar bloque</button>
+                        <button type="button" id="btnEliminarBloque" class="btn btn--peligro">Eliminar bloque</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ============================= VISUALIZACIÓN + ORGANIZACIÓN ============================= -->
+            <section class="panel" id="panelBloque" style="display:none;">
+                <h2 class="panel__titulo">2. Bloque actual</h2>
+
+                <div class="form-grupo">
+                    <label>Organización de los datos</label>
+                    <div class="botonera" style="margin-top:0;">
+                        <button type="button" id="btnOrdenOriginal" class="btn btn--secundario">Orden original</button>
+                        <button type="button" id="btnOrdenar" class="btn btn--secundario">Ordenar</button>
+                    </div>
+                    <p style="font-size:13px;margin-top:6px;" id="estadoOrden">Estado actual: orden original</p>
+                </div>
+
+                <div id="bloqueVisual" class="bloque-visual"></div>
+            </section>
+
+            <!-- ============================= BÚSQUEDA SECUENCIAL ============================= -->
+            <section class="panel" id="panelSecuencial" style="display:none;">
+                <h2 class="panel__titulo">3. Búsqueda secuencial</h2>
+                <p>Recorre el bloque desde el primer elemento, comparando uno a uno, sin requerir orden previo.</p>
+
+                <div class="form-grupo">
+                    <label for="inputClaveSecuencial">Clave a buscar</label>
+                    <input type="text" id="inputClaveSecuencial" placeholder="Ej: A82KD">
+                </div>
+
+                <div class="botonera">
+                    <button type="button" id="btnSecuencialPaso" class="btn btn--secundario">Ejecutar paso a paso</button>
+                    <button type="button" id="btnSecuencialAuto" class="btn">Ejecutar automáticamente</button>
+                </div>
+
+                <div id="mensajeSecuencial"></div>
+                <div id="logSecuencial" class="log-pasos" style="display:none;"></div>
+            </section>
+
+            <!-- ============================= BÚSQUEDA BINARIA ============================= -->
+            <section class="panel" id="panelBinaria" style="display:none;">
+                <h2 class="panel__titulo">4. Búsqueda binaria</h2>
+                <div class="mensaje mensaje--advertencia">
+                    Para utilizar búsqueda binaria, las claves deben estar ordenadas.
+                    Usa el botón "Ordenar" en la sección anterior.
+                </div>
+
+                <div class="form-grupo" style="margin-top:14px;">
+                    <label for="inputClaveBinaria">Clave a buscar</label>
+                    <input type="text" id="inputClaveBinaria" placeholder="Ej: A82KD">
+                </div>
+
+                <div class="botonera">
+                    <button type="button" id="btnBinariaPaso" class="btn btn--secundario">Ejecutar paso a paso</button>
+                    <button type="button" id="btnBinariaAuto" class="btn">Ejecutar automáticamente</button>
+                </div>
+
+                <div id="mensajeBinaria"></div>
+                <div id="logBinaria" class="log-pasos" style="display:none;"></div>
+            </section>
+
+            <!-- ============================= COMPLEJIDAD ============================= -->
+            <section class="panel">
+                <h2 class="panel__titulo">5. Complejidad temporal</h2>
+                <table class="tabla-datos">
+                    <thead>
+                        <tr>
+                            <th>Algoritmo</th>
+                            <th>Mejor caso</th>
+                            <th>Caso promedio</th>
+                            <th>Peor caso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Búsqueda secuencial</td>
+                            <td>O(1)</td>
+                            <td>O(n)</td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Búsqueda binaria</td>
+                            <td>O(1)</td>
+                            <td>O(log n)</td>
+                            <td>O(log n)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>
+                    La búsqueda binaria necesita datos ordenados porque en cada paso descarta la
+                    mitad del rango de búsqueda comparando con el elemento central; esa
+                    decisión solo es válida si se garantiza que todos los elementos a un lado
+                    son menores (o mayores) que el central, lo cual únicamente se cumple si el
+                    bloque está ordenado.
+                </p>
+            </section>
+
+        </main>
+    </div>
+
+    <!--
+        BACKEND TODO:
+        Este formulario y los botones de guardar/cargar/eliminar bloque
+        actualmente usan localStorage (ver busquedas.js). Posteriormente
+        deberán comunicarse con los endpoints:
+            POST   /api/busquedas/bloques
+            GET    /api/busquedas/bloques
+            GET    /api/busquedas/bloques/{id}
+            DELETE /api/busquedas/bloques/{id}
+            POST   /api/busquedas/secuencial
+            POST   /api/busquedas/binaria
+    -->
+
+    <!-- TEMPORAL: incluir-partials.js no existe en la versión Spring; inyecta
+         header/sidebar por fetch. Debe cargarse antes que main.js. -->
+    <script src="js/incluir-partials.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/busquedas.js"></script>
+</body>
+</html>
